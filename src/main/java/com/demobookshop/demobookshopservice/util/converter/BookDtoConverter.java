@@ -3,6 +3,7 @@ package com.demobookshop.demobookshopservice.util.converter;
 import com.demobookshop.demobookshopservice.model.Book;
 import com.demobookshop.demobookshopservice.model.dto.BookDto;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -24,7 +25,7 @@ public class BookDtoConverter {
   public static final Function<Book, BookDto> bookToBookDto = b -> new BookDto(b.getId(),
       b.getUuid().toString(),
       b.getParentId(),
-      b.getParentUuid().toString(),
+      Objects.isNull( b.getParentUuid()) ? null : b.getParentUuid().toString(),
       b.isCatalog(),
       b.getTitle(),
       b.getAuthor());
