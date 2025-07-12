@@ -7,19 +7,17 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * @param id
- * @param uuid
- * @param parentId
- * @param parentUuid
- * @param isCatalog
- * @param title
- * @param author
+ * Book Data Transfer Object (DTO).
+ * @param id book ID
+ * @param uuid book UUID
+ * @param parentId reference on parent entity ID
+ * @param parentUuid reference on parent entity UUID
+ * @param isCatalog Indicates if the entity is a catalog.
+ * @param title book Title.
+ * @param author book Author.
  */
 @Schema(name = "Book", description = "Book DTO")
 public record BookDto(
-    /**
-     * Book ID.
-     */
     @Schema(description = "Book ID", example = "1")
     @JsonProperty("id")
     Long id,
