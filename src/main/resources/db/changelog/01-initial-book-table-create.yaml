@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1752349640000-1
+      author: Mykhasko
+      comment: Initial creation of BOOKS table
+      changes:
+        - createTable:
+            tableName: BOOKS
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: UUID
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: PARENT_ID
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: PARENT_UUID
+                  type: UUID
+                  constraints:
+                    nullable: true
+              - column:
+                  name: IS_CATALOG
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+                    defaultValue: false
+              - column:
+                  name: TITLE
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: AUTHOR
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
