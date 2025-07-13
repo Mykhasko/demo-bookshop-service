@@ -92,12 +92,12 @@ public class BookController {
                     schema = @Schema(implementation = BookDto.class))),
         @ApiResponse(responseCode = "500", description = "Internal server error")
       })
-  @ResponseStatus(HttpStatus.OK)
+  @ResponseStatus(HttpStatus.CREATED)
   @PostMapping(
       path = "",
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public BookDto addBook(BookDto newBook) {
+  public BookDto addBook(@RequestBody BookDto newBook) {
     return bookService.addBook(newBook);
   }
 
