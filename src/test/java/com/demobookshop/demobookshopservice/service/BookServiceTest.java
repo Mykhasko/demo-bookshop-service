@@ -25,8 +25,8 @@ class BookServiceTest {
   @InjectMocks
   private BookService bookService;
 
-  private List<Book> mockBooks() {
-    return new ArrayList<Book>(List.of(
+  private List mockBooks() {
+    return new ArrayList<>(List.of(
         new Book(1L, UUID.randomUUID(), 0L, null, true, "Title 1", "Author 1"),
         new Book(2L, UUID.randomUUID(), 0L, null, false, "Title 2", "Author 2"),
         new Book(3L, UUID.randomUUID(), 0L, null, true, "Title 3", "Author 3")));
