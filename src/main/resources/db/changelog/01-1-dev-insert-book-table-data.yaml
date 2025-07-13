@@ -1,0 +1,102 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1752349696862-2
+      author: Mykhasko
+      comment: Insert initial data into BOOKS table
+      context: dev
+      changes:
+        - insert:
+            tableName: BOOKS
+            columns:
+              - column:
+                  name: UUID
+                  valueComputed: "CAST('f47ac10b-58cc-4372-a567-0e02b2c3d479' AS UUID)"
+                  type: UUID
+              - column:
+                  name: PARENT_ID
+                  valueNumeric: null
+              - column:
+                  name: PARENT_UUID
+                  value: null
+              - column:
+                  name: IS_CATALOG
+                  valueBoolean: true
+              - column:
+                  name: TITLE
+                  value: 'Programming Books Catalog'
+              - column:
+                  name: AUTHOR
+                  value: 'Various Authors'
+        - insert:
+            tableName: BOOKS
+            columns:
+              - column:
+                  name: UUID
+                  valueComputed: "CAST('d2c1f8b0-3e4f-4c5a-9b6c-7d8e9f0a1b2c' AS UUID)"
+                  type: UUID
+              - column:
+                  name: PARENT_ID
+                  valueNumeric: 1
+              - column:
+                  name: PARENT_UUID
+                  valueComputed: "CAST('f47ac10b-58cc-4372-a567-0e02b2c3d479' AS UUID)"
+                  type: UUID
+              - column:
+                  name: IS_CATALOG
+                  valueBoolean: false
+              - column:
+                  name: TITLE
+                  value: 'Introduction to Programming'
+              - column:
+                  name: AUTHOR
+                  value: 'John Doe'
+        - insert:
+            tableName: BOOKS
+            columns:
+              - column:
+                  name: UUID
+                  valueComputed: "CAST('8e9f0d1c-2a3b-4c5d-6e7f-8a9b0c1d2e3f' AS UUID)"
+                  type: UUID
+              - column:
+                  name: PARENT_ID
+                  valueNumeric: 2
+              - column:
+                  name: PARENT_UUID
+                  valueComputed: "CAST('f47ac10b-58cc-4372-a567-0e02b2c3d479' AS UUID)"
+                  type: UUID
+              - column:
+                  name: IS_CATALOG
+                  valueBoolean: false
+              - column:
+                  name: TITLE
+                  value: 'Advanced Database Systems'
+              - column:
+                  name: AUTHOR
+                  value: 'Jane Smith'
+        - insert:
+            tableName: BOOKS
+            columns:
+              - column:
+                  name: UUID
+                  valueComputed: "CAST('a1b2c3d4-e5f6-4a8b-9c0d-e1f2a3b4c5d6' AS UUID)"
+                  type: UUID
+              - column:
+                  name: PARENT_ID
+                  valueNumeric: 1
+              - column:
+                  name: PARENT_UUID
+                  valueComputed: "CAST('f47ac10b-58cc-4372-a567-0e02b2c3d479' AS UUID)"
+                  type: UUID
+              - column:
+                  name: IS_CATALOG
+                  valueBoolean: false
+              - column:
+                  name: TITLE
+                  value: 'Web Development Essentials'
+              - column:
+                  name: AUTHOR
+                  value: 'Alice Johnson'
+      rollback:
+        - delete:
+            tableName: BOOKS
+            where: "UUID IN ('f47ac10b-58cc-4372-a567-0e02b2c3d479', '8e9f0d1c-2a3b-4c5d-6e7f-8a9b0c1d2e3f', '8e9f0d1c-2a3b-4c5d-6e7f-8a9b0c1d2e3f', 'a1b2c3d4-e5f6-4a8b-9c0d-e1f2a3b4c5d6')"
