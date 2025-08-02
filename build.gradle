@@ -1,8 +1,10 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.5.3'
+	id 'org.springframework.boot' version '3.5.4'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'org.asciidoctor.jvm.convert' version '4.0.4'
+	id 'com.diffplug.spotless' version '7.1.0'
+	id 'org.cyclonedx.bom' version '2.3.1'
 }
 
 group = 'com.demobookshop'
@@ -31,19 +33,20 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.liquibase:liquibase-core'
-	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-	runtimeOnly 'com.h2database:h2'
-	//runtimeOnly 'org.postgresql:postgresql'
+	//runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'org.postgresql:postgresql'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-	testImplementation 'org.springframework:spring-webflux'
 	testImplementation 'org.springframework.graphql:spring-graphql-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	//testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation 'org.testcontainers:postgresql'
+	testRuntimeOnly 'com.h2database:h2'
 }
 
 tasks.named('bootBuildImage') {
@@ -58,4 +61,18 @@ tasks.named('test') {
 tasks.named('asciidoctor') {
 	inputs.dir snippetsDir
 	dependsOn test
+}
+
+spotless {
+	java {
+		target 'src/**/*.java'
+		targetExclude '**/build/**','**/generated/**'
+		palantirJavaFormat('2.39.0')
+				.style("GOOGLE")
+				.formatJavadoc(true)
+
+		removeUnusedImports()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
 }

@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1752349686862-0
+      author: Mykhasko
+      comment: Create initial schema for BOOK_CATALOG
+      changes:
+        - sql:
+             CREATE SCHEMA IF NOT EXISTS BOOK_CATALOG;
+      rollback:
+        - sql:
+              DROP SCHEMA IF EXISTS BOOK_CATALOG;
