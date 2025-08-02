@@ -1,0 +1,150 @@
+
+services:
+
+  spring-app:
+    # This service is the Spring Boot application
+    container_name: spring-boot-demo-bookshop-service
+    image: 'spring-boot-demo-bookshop-service:latest'
+    # Dockerfile is in the same directory as this docker-docker-compose.yaml
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    environment:
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      HAZELCAST_NETWORK_MEMBERS: hazelcast
+    networks:
+        - my-network
+    depends_on:
+      - postgres
+      - hazelcast
+
+  # PostgreSQL is a powerful, open-source relational database management system
+  # It is used to store and manage the data for the Spring Boot application
+  # The database is initialized with environment variables for the database name, user, and password
+  postgres:
+    container_name: postgres-demo-bookshop-service
+    image: 'postgres:17-alpine'
+    environment:
+      POSTGRES_DB: ${DB_URL}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - '5432:5432'
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data'
+    networks:
+      - my-network
+
+  # pgAdmin is a web-based PostgreSQL database management tool
+  # It allows you to manage your PostgreSQL databases through a web interface
+  pgadmin:
+    container_name: pgadmin-demo-bookshop-service
+    image: 'dpage/pgadmin4:latest'
+    environment:
+        PGADMIN_DEFAULT_EMAIL: info@demobookshop.com
+        PGADMIN_DEFAULT_PASSWORD: secret
+    ports:
+      - '5050:80'
+    depends_on:
+        - postgres
+    networks:
+      - my-network
+
+  hazelcast:
+    container_name: hazelcast-demo-bookshop-service
+    image: 'hazelcast/hazelcast:5.5.0-slim-jdk21'
+    ports:
+      - '5701:5701'
+      - '8081:8081'
+    environment:
+      HAZELCAST_NETWORK_PORT: 5701
+      HAZELCAST_NETWORK_PORT_AUTO_INCREMENT: 'false'
+      HZ_NETWORK_MEMBERS: 'spring-app, hazelcast'
+      HZ_MC_PORT: 8081
+      HZ_MC_ENABLED: 'true'
+      HZ_MC_URL: 'http://localhost:8081'
+    networks:
+      - my-network
+
+  grafana:
+    container_name: grafana-demo-bookshop-service
+    image: 'grafana/grafana:latest'
+    ports:
+      - '3000:3000'
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: secret
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - my-network
+
+  prometheus:
+    container_name: prometheus-demo-bookshop-service
+    image: 'prom/prometheus:latest'
+    ports:
+        - '9090:9090'
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - my-network
+    depends_on:
+      - spring-app
+
+
+  loki:
+    container_name: loki-demo-bookshop-service
+    image: 'grafana/loki:2.9.0'
+    ports:
+      - '3100:3100'
+    volumes:
+      - loki_data:/loki
+      - ./loki/loki-config.yaml:/etc/loki/loki-config.yaml
+    command: -config.file=/etc/loki/loki-config.yaml
+    networks:
+      - my-network
+    depends_on:
+      - spring-app
+
+  promtail:
+    container_name: promtail-demo-bookshop-service
+    image: 'grafana/promtail:2.9.0'
+    volumes:
+      - /var/log:/var/log
+      - ./promtail/promtail-config.yaml:/etc/promtail/config.yaml
+        # Mount the Docker container logs directory to read logs from running containers
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      # Mount the Docker socket to allow Promtail to read container logs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: -config.file=/etc/promtail/config.yaml
+    networks:
+      - my-network
+    depends_on:
+      - loki
+
+volumes:
+    # This volume is used to persist PostgreSQL data
+    postgres_data:
+        driver: local
+
+    grafana_data:
+        driver: local
+
+    prometheus_data:
+        driver: local
+
+    loki_data:
+        driver: local
+
+networks:
+  my-network:
+    driver: bridge
