@@ -67,7 +67,7 @@ spotless {
 	java {
 		target 'src/**/*.java'
 		targetExclude '**/build/**','**/generated/**'
-		palantirJavaFormat('2.39.0')
+		palantirJavaFormat('2.90.0')
 				.style("GOOGLE")
 				.formatJavadoc(true)
 
