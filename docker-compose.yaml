@@ -12,7 +12,9 @@ services:
     ports:
       - '8080:8080'
     environment:
-      SPRING_DATASOURCE_URL: ${DB_URL}
+        # Environment variables for the Spring Boot application
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       HAZELCAST_NETWORK_MEMBERS: hazelcast
@@ -29,7 +31,7 @@ services:
     container_name: postgres-demo-bookshop-service
     image: 'postgres:17-alpine'
     environment:
-      POSTGRES_DB: ${DB_URL}
+      POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
@@ -59,16 +61,31 @@ services:
     image: 'hazelcast/hazelcast:5.5.0-slim-jdk21'
     ports:
       - '5701:5701'
-      - '8081:8081'
     environment:
-      HAZELCAST_NETWORK_PORT: 5701
-      HAZELCAST_NETWORK_PORT_AUTO_INCREMENT: 'false'
-      HZ_NETWORK_MEMBERS: 'spring-app, hazelcast'
-      HZ_MC_PORT: 8081
-      HZ_MC_ENABLED: 'true'
-      HZ_MC_URL: 'http://localhost:8081'
+      HZ_NETWORK_PORT: 5701
+      HZ_NETWORK_PUBLIC_ADDRESS: hazelcast
+      HZ_CLUSTER: dev
+      HZ_CLUSTER_NAME: dev
+      HZ_NETWORK_JOIN_ENABLED: 'true'
+      HZ_NETWORK_JOIN_MULTICAST_ENABLED: 'false'
+      HZ_NETWORK_JOIN_TCPIP_ENABLED: 'true'
+      HZ_MANAGEMENT_CENTER_URL: http://hazelcast-management-center-demo-bookshop-service:8080
     networks:
       - my-network
+
+  hazelcast-management-center:
+    container_name: hazelcast-management-center-demo-bookshop-service
+    image: 'hazelcast/management-center:5.5.0'
+    ports:
+      - '8081:8080'
+    environment:
+      MC_DEFAULT_CLUSTER: dev
+      MC_DEFAULT_CLUSTER_NAME: dev
+      MC_DEFAULT_CLUSTER_MEMBER: hazelcast-demo-bookshop-service:5701
+    networks:
+      - my-network
+    depends_on:
+      - hazelcast
 
   grafana:
     container_name: grafana-demo-bookshop-service
@@ -76,6 +93,7 @@ services:
     ports:
       - '3000:3000'
     environment:
+      GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: secret
       GF_AUTH_ANONYMOUS_ENABLED: 'true'
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
@@ -93,7 +111,7 @@ services:
     ports:
         - '9090:9090'
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     networks:
       - my-network
@@ -103,13 +121,12 @@ services:
 
   loki:
     container_name: loki-demo-bookshop-service
-    image: 'grafana/loki:2.9.0'
+    image: 'grafana/loki:2.9.15'
     ports:
       - '3100:3100'
     volumes:
       - loki_data:/loki
-      - ./loki/loki-config.yaml:/etc/loki/loki-config.yaml
-    command: -config.file=/etc/loki/loki-config.yaml
+      - ./monitoring/loki/loki-config.yaml:/etc/loki/loki-config.yaml
     networks:
       - my-network
     depends_on:
@@ -117,15 +134,13 @@ services:
 
   promtail:
     container_name: promtail-demo-bookshop-service
-    image: 'grafana/promtail:2.9.0'
+    image: 'grafana/promtail:2.9.15'
     volumes:
-      - /var/log:/var/log
-      - ./promtail/promtail-config.yaml:/etc/promtail/config.yaml
+      - ./monitoring/promtail/promtail-config.yaml:/etc/promtail/config.yaml
         # Mount the Docker container logs directory to read logs from running containers
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       # Mount the Docker socket to allow Promtail to read container logs
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    command: -config.file=/etc/promtail/config.yaml
     networks:
       - my-network
     depends_on:
