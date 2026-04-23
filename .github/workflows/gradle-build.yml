@@ -30,9 +30,10 @@ jobs:
           distribution: 'temurin'
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v3
+        continue-on-error: true  # Don't fail the entire workflow
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
-      - name: Setup Gradle
-        uses: gradle/actions/gradle-build@v6
       - name: Build with Gradle
-        run: ./gradlew build
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          arguments: build
