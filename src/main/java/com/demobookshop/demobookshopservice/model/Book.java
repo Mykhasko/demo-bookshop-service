@@ -1,9 +1,9 @@
 package com.demobookshop.demobookshopservice.model;
 
 import jakarta.persistence.*;
-
 import java.util.Objects;
 import java.util.UUID;
+import org.hibernate.annotations.Comment;
 
 @Entity
 @Table(name = "BOOKS")
@@ -12,6 +12,7 @@ public class Book {
   @Id
   @Column(name = "ID")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Comment("Unique identifier for the book - PRIMARY KEY.")
   private Long id;
 
   @Column(name = "UUID")
@@ -23,7 +24,8 @@ public class Book {
   @Column(name = "PARENT_UUID")
   private UUID parentUuid;
 
-  @Column(name = "IS_CATALOG", columnDefinition = "Is catalog")
+  @Column(name = "IS_CATALOG")
+  @Comment("Indicates if the entity is a catalog.")
   private boolean isCatalog;
 
   @Column(name = "TITLE")
@@ -32,11 +34,16 @@ public class Book {
   @Column(name = "AUTHOR")
   private String author;
 
+  public Book() {}
 
-  public Book() {
-  }
-
-  public Book(Long id, UUID uuid, Long parentId, UUID parentUuid, boolean isCatalog, String title, String author) {
+  public Book(
+      Long id,
+      UUID uuid,
+      Long parentId,
+      UUID parentUuid,
+      boolean isCatalog,
+      String title,
+      String author) {
     this.id = id;
     this.uuid = uuid;
     this.parentId = parentId;
@@ -107,7 +114,12 @@ public class Book {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Book book = (Book) o;
-    return isCatalog == book.isCatalog && Objects.equals(uuid, book.uuid) && Objects.equals(parentId, book.parentId) && Objects.equals(parentUuid, book.parentUuid) && Objects.equals(title, book.title) && Objects.equals(author, book.author);
+    return isCatalog == book.isCatalog
+        && Objects.equals(uuid, book.uuid)
+        && Objects.equals(parentId, book.parentId)
+        && Objects.equals(parentUuid, book.parentUuid)
+        && Objects.equals(title, book.title)
+        && Objects.equals(author, book.author);
   }
 
   @Override
@@ -117,14 +129,13 @@ public class Book {
 
   @Override
   public String toString() {
-    return "Book{" +
-        "id=" + id +
-        ", uuid=" + uuid +
-        ", parentId=" + parentId +
-        ", parentUuid=" + parentUuid +
-        ", isCatalog=" + isCatalog +
-        ", title='" + title + '\'' +
-        ", author='" + author + '\'' +
-        '}';
+    return "Book{" + "id="
+        + id + ", uuid="
+        + uuid + ", parentId="
+        + parentId + ", parentUuid="
+        + parentUuid + ", isCatalog="
+        + isCatalog + ", title='"
+        + title + '\'' + ", author='"
+        + author + '\'' + '}';
   }
 }

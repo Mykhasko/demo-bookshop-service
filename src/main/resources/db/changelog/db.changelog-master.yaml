@@ -1,6 +1,13 @@
 databaseChangeLog:
-  - changeSet:
-      id: 0
-      author: admin
-      changes:
-        -
+    - include:
+        file: /db/changelog/00-initial-schema-create.yaml
+        labels: initial, schema, create
+        created: 2025-07-12T00:00:00Z
+    - include:
+        file: /db/changelog/01-initial-book-table-create.yaml
+        labels: initial, book, create
+        created: 2025-07-12T00:00:00Z
+    - include:
+        file: /db/changelog/01-1-dev-insert-book-table-data.yaml
+        labels: initial, book, insert test data
+        created: 2025-07-12T00:00:00Z
