@@ -22,18 +22,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK 25
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
+      - name: Set up JDK 27
+        uses: actions/setup-java@v6
         with:
-          java-version: '25'
-          distribution: 'temurin'
+          java-version: '27'
+          distribution: temurin
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v3
         continue-on-error: true  # Don't fail the entire workflow
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
       - name: Build with Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v6
         with:
           arguments: build
