@@ -1,5 +1,5 @@
 # Stage 1: Build the application with Gradle
-FROM gradle:9.1-jdk25-alpine AS build
+FROM gradle:9.8.1-jdk-alpine AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 
@@ -9,7 +9,7 @@ COPY --chown=gradle:gradle src/ /home/gradle/src/src
 RUN gradle build --no-daemon --stacktrace
 
 # Stage 2: Run the application with Java
-FROM eclipse-temurin:25-jre-alpine
+FROM eclipse-temurin:26-jre-alpine
 LABEL version="1.0"
 LABEL description="This is the base docker image for the Spring Boot Application (Demo Bookshop Service)"
 LABEL maintainer="info@demobookshop.com"
