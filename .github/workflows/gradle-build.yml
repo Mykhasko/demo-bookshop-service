@@ -35,5 +35,5 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build with Gradle
         uses: gradle/actions/setup-gradle@v6
-        with:
-          arguments: build
+      - name: Build with Gradle
+        run: ./gradlew build
